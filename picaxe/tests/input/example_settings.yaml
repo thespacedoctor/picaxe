@@ -1,6 +1,12 @@
 version: 1
 
 flickr:
+    consumer_key: 8a0a6ecfaf6226c5451a133396146bac
+    consumer_secret: 7bef685458beb953
+    oauth_token: 72157675544448966-8b50b644bb84fbe4
+    oauth_token_secret: 74caced2fe1b062e
+    user_nsid: 92344016%40N06
+    username: nothingbutdave
 
 logging settings:
     formatters:

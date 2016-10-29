@@ -5,10 +5,15 @@ Documentation for picaxe can be found here: http://picaxe.readthedocs.org/en/sta
 
 Usage:
     picaxe init
-    picaxe [-s <pathToSettingsFile>]
+    picaxe auth [-s <pathToSettingsFile>]
+    picaxe md <url> [<width>] [-s <pathToSettingsFile>]
 
 Options:
     init                  setup the polygot settings file for the first time
+    auth                  authenticate picaxe against your flickr account
+    md                    generate the MD reference link for the image in the given flickr URL
+    <url>                 the flickr URL or photoid
+    <width>               pixel width resolution of the linked image. Default *1024*. options = [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
     -h, --help            show this help message
     -v, --version         show version
     -s, --settings        the settings file
@@ -25,10 +30,6 @@ from fundamentals import tools, times
 # from ..__init__ import *
 
 
-def tab_complete(text, state):
-    return (glob.glob(text + '*') + [None])[state]
-
-
 def main(arguments=None):
     """
     *The main function used when ``cl_utils.py`` is run as a single script from the cl, or when installed as a cl command*
@@ -43,10 +44,7 @@ def main(arguments=None):
     )
     arguments, settings, log, dbConn = su.setup()
 
-    # tab completion for raw_input
-    readline.set_completer_delims(' \t\n;')
-    readline.parse_and_bind("tab: complete")
-    readline.set_completer(tab_complete)
+    startTime = times.get_now_sql_datetime()
 
     # unpack remaining cl arguments using `exec` to setup the variable names
     # automatically
@@ -63,40 +61,6 @@ def main(arguments=None):
             dbConn = val
         log.debug('%s = %s' % (varname, val,))
 
-    ## START LOGGING ##
-    startTime = times.get_now_sql_datetime()
-    log.info(
-        '--- STARTING TO RUN THE cl_utils.py AT %s' %
-        (startTime,))
-
-    # set options interactively if user requests
-    if "interactiveFlag" in locals() and interactiveFlag:
-
-        # load previous settings
-        moduleDirectory = os.path.dirname(__file__) + "/resources"
-        pathToPickleFile = "%(moduleDirectory)s/previousSettings.p" % locals()
-        try:
-            with open(pathToPickleFile):
-                pass
-            previousSettingsExist = True
-        except:
-            previousSettingsExist = False
-        previousSettings = {}
-        if previousSettingsExist:
-            previousSettings = pickle.load(open(pathToPickleFile, "rb"))
-
-        # x-raw-input
-        # x-boolean-raw-input
-        # x-raw-input-with-default-value-from-previous-settings
-
-        # save the most recently used requests
-        pickleMeObjects = []
-        pickleMe = {}
-        theseLocals = locals()
-        for k in pickleMeObjects:
-            pickleMe[k] = theseLocals[k]
-        pickle.dump(pickleMe, open(pathToPickleFile, "wb"))
-
     if init:
         from os.path import expanduser
         home = expanduser("~")
@@ -111,6 +75,30 @@ def main(arguments=None):
             p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
         except:
             pass
+
+    if auth:
+        from picaxe import picaxe
+        client = picaxe(
+            log=log,
+            settings=settings,
+            pathToSettingsFile=pathToSettingsFile
+        )
+        client.authenticate()
+
+    if md:
+        from picaxe import picaxe
+        Flickr = picaxe(
+            log=log,
+            settings=settings
+        )
+        if not width:
+            width = 1024
+        mdLink = Flickr.md(
+            url=url,
+            # [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
+            width=width
+        )
+        print mdLink
 
     # CALL FUNCTIONS/OBJECTS
 

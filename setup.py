@@ -12,7 +12,12 @@ def readme():
 install_requires = [
     'pyyaml',
     'picaxe',
-    'fundamentals'
+    'fundamentals',
+    'requests',
+    'requests_oauthlib',
+    'pyopenssl',
+    'ndg-httpsclient',
+    'pyasn1'
 ]
 
 # READ THE DOCS SERVERS
@@ -48,7 +53,7 @@ setup(name="picaxe",
       install_requires=install_requires,
       test_suite='nose.collector',
       tests_require=['nose', 'nose-cover3'],
-      # entry_points={
-      #     'console_scripts': ['picaxe=picaxe.cl_utils:main'],
-      # },
+      entry_points={
+          'console_scripts': ['picaxe=picaxe.cl_utils:main'],
+      },
       zip_safe=False)
