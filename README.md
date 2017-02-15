@@ -1,6 +1,10 @@
 picaxe
 ======
 
+[![Documentation Status](https://readthedocs.org/projects/picaxe/badge/)](http://picaxe.readthedocs.io/en/latest/?badge)
+
+[![Coverage Status](https://cdn.rawgit.com/thespacedoctor/picaxe/master/coverage.svg)](https://cdn.rawgit.com/thespacedoctor/picaxe/master/htmlcov/index.html)
+
 *A python package and command-line tools for work with the Flickr API to
 upload images, sort images, generate MD image reference links etc*.
 
@@ -14,13 +18,19 @@ Command-Line Usage
     Usage:
         picaxe init
         picaxe auth [-s <pathToSettingsFile>]
-        picaxe md <url> [-s <pathToSettingsFile>]
+        picaxe md <urlOrPhotoid> [<width>] [-s <pathToSettingsFile>]
+        picaxe albums [-s <pathToSettingsFile>]
 
     Options:
         init                  setup the polygot settings file for the first time
         auth                  authenticate picaxe against your flickr account
         md                    generate the MD reference link for the image in the given flickr URL
-        <url>                 the flickr URL or photoid
+        albums                list all the albums in the flickr account
+
+        <pathToSettingsFile>  path to the picaxe settings file
+        <urlOrPhotoid>        the flickr URL or photoid
+        <width>               pixel width resolution of the linked image. Default *original*. [75|100|150|240|320|500|640|800|1024|1600|2048]
+
         -h, --help            show this help message
         -v, --version         show version
         -s, --settings        the settings file
@@ -36,7 +46,7 @@ version](http://picaxe.readthedocs.org/en/latest/)).
 Installation
 ============
 
-The easiest way to install picaxe us to use `pip`:
+The easiest way to install picaxe is to use `pip`:
 
     pip install picaxe
 

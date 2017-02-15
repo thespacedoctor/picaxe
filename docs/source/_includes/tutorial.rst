@@ -1,7 +1,7 @@
 Command-Line Tutorial
 =====================
 
-Before you begin using picaxe you will need to populate some custom settings within the picaxe settings file.
+Before you begin using picaxe you'll need to populate some custom settings within the picaxe settings file.
 
 To setup the default settings file at ``~/.config/picaxe/picaxe.yaml`` run the command:
 
@@ -9,8 +9,102 @@ To setup the default settings file at ``~/.config/picaxe/picaxe.yaml`` run the c
     
     picaxe init
 
-This should create and open the settings file; follow the instructions in the file to populate the missing settings values (usually given an ``XXX`` placeholder). 
+This should create and open the settings file; follow the instructions in the file to populate the missing settings values (usually given an ``XXX`` place-holder). 
+      
+Authenticating Picaxe Against Your Flickr Account
+-------------------------------------------------
 
-.. todo::
+In order to use picaxe for the first time you'll need to first authenticate it against your Flickr account. This is to give picaxe permission to read your private photo metadata to generate markdown image links etc and also the ability to upload images and screengrabs to your various albums.
 
-    - add tutorial
+The ``picaxe init`` command should initiate the authentication process if you're running picaxe for the first time, but if you need to run the authentication process again for any reason use:
+
+.. code-block:: bash 
+    
+    picaxe auth
+
+You should see something like this, and then your default browser *should* open at the URL presented (if not just copy and paste the URL into your browser):
+
+.. code-block:: text 
+     
+    Now to authorize picaxe against your personal flickr account
+    Navigate to https://www.flickr.com/services/oauth/authorize?perms=write&oauth_token=72157678178240312-c1e614c89bbfa330 and click on 'OK, I'LL AUTHOURIZE IT'
+    What is the oauth_verifier value in URL you where redirected to?
+      > 
+
+You'll be presented with an authentication request like the one below. Click 'OK, I'LL AUTHOURIZE IT'.
+
+.. image:: https://i.imgur.com/KMP8rEp.png
+        :width: 800px
+        :alt: picaxe authorisation request from flickr
+
+You'll then be redirected to *thespacedoctor* website and in the URL you'll notice there are ``oauth_token`` and ``oauth_verifier`` parameters. 
+
+.. image:: https://i.imgur.com/tOEyonj.png
+        :width: 800px
+        :alt: oauth_verifier in URL
+
+Copy the ``oauth_verifier`` value, paste it into the terminal and hit return. That's it. Simples. Your credentials are now written into the picaxe settings file which can be found at ``~/.config/picaxe/picaxe.yaml``.
+
+Listing Albums in Flickr Account
+--------------------------------
+
+To list all of the albums in your Flickr account run the command:
+
+.. code-block:: bash 
+    
+    picaxe albums
+
+This prints the titles of all the albums you have created in your Flickr account to stdout:
+
+.. code-block:: bash 
+     
+    Auto Upload
+    home movies
+    projects: thespacedoctor
+    notes: images and screengrabs
+    blog: workflow tags
+    family photos 
+
+
+Generating a Multi-Markdown Image Link from Any Flickr Image
+------------------------------------------------------------
+
+To generate a MMD image link for any image in your Flickr account (private or public), or any other public Flickr image, run the command:
+
+.. code-block:: bash 
+    
+    picaxe md <urlOrPhotoid> 
+
+Take `this image <https://www.flickr.com/photos/92344016@N06/30588492355/in/album-72157675576126786/>`_ for example. To generate the MMD image link run:
+
+.. code-block:: bash 
+    
+    picaxe md https://www.flickr.com/photos/92344016@N06/30588492355/in/album-72157675576126786/
+
+or just quote the photo-id (*30588492355* in this case):
+
+.. code-block:: bash 
+    
+    picaxe md 30588492355
+
+Here's the MMD link dumped to stdout:
+
+.. code-block:: text 
+    
+    ![][Photoelectric effect 30588492355]
+
+    [Photoelectric effect 30588492355]: https://farm6.staticflickr.com/5722/30588492355_147111fcd3_o.png title="Photoelectric effect" width=600px 
+
+Note the image reference is generated from the image title (if there is one) and photo-id so should always be unique (i.e. no reference name clashes in your MMD documents).
+
+    
+
+
+
+
+
+ 
+
+
+
+    

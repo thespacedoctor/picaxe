@@ -40,13 +40,18 @@ class picaxe():
         self.pathToSettingsFile = pathToSettingsFile
         # xt-self-arg-tmpx
 
-        # 2. @flagged: what are the default attrributes each object could have? Add them to variable attribute set here
-        # Variable Data Atrributes
-
-        # 3. @flagged: what variable attrributes need overriden in any baseclass(es) used
-        # Override Variable Data Atrributes
-
         # Initial Actions
+        if "flickr" not in self.settings or not self.settings["flickr"] or "oauth_token" not in self.settings["flickr"] or "oauth_token_secret" not in self.settings["flickr"]:
+            print "You need to authenticate picaxe against your Flickr account before you can proceed ..."
+            self.authenticate()
+
+        consumer_key = str(self.settings["flickr"]["consumer_key"])
+        consumer_secret = str(self.settings["flickr"]["consumer_secret"])
+        oauth_token = str(self.settings["flickr"]["oauth_token"])
+        oauth_token_secret = str(self.settings["flickr"]["oauth_token_secret"])
+
+        self.auth = OAuth1(consumer_key, consumer_secret,
+                           oauth_token, oauth_token_secret, signature_method=u'HMAC-SHA1', signature_type=u'AUTH_HEADER')
 
         return None
 
@@ -61,7 +66,7 @@ class picaxe():
 
             To authenicate pixace against a Flickr account run the following (note this is interactive so a human needs to be present to respond to prompts!)
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 from picaxe import picaxe
                 flickrClient = picaxe(
@@ -75,7 +80,7 @@ class picaxe():
         if not self.settings["flickr"] or "consumer_key" not in self.settings["flickr"] or "consumer_secret" not in self.settings["flickr"]:
             print "Navigate here <https://www.flickr.com/services/apps/create/apply/> and request a 'non-commerial key'"
             time.sleep(2)
-            ## open in webbrowser
+            # open in webbrowser
             webbrowser.open_new_tab(
                 "https://www.flickr.com/services/apps/create/apply/")
 
@@ -105,10 +110,10 @@ class picaxe():
         oauth_token_secret = str(oauthList[2].split("=")[1])
 
         print "Now to authorize picaxe against your personal flickr account"
-        print "Navigate to https://www.flickr.com/services/oauth/authorize?oauth_token=" + oauth_token + " and click on 'OK, I'LL AUTHOURIZE IT'"
+        print "Navigate to https://www.flickr.com/services/oauth/authorize?perms=write&oauth_token=" + oauth_token + " and click on 'OK, I'LL AUTHOURIZE IT'"
         time.sleep(1)
         webbrowser.open_new_tab(
-            "https://www.flickr.com/services/oauth/authorize?oauth_token=" + oauth_token)
+            "https://www.flickr.com/services/oauth/authorize?perms=write&oauth_token=" + oauth_token)
 
         oauth_verifier = raw_input(
             "What is the oauth_verifier value in URL you where redirected to? \n  >  ")
@@ -176,7 +181,7 @@ class picaxe():
 
             To get some associated metadata related to the image at a given Flcikr share URL run the `get_photo_metadata` method. Note the URL can be any of the various Flickr URL flavours.
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 from picaxe import picaxe
                 flickr = picaxe(
@@ -186,26 +191,17 @@ class picaxe():
                 images, title, desc, photoId = flickr.get_photo_metadata(
                     url="https://www.flickr.com/photos/92344046@N06/30455210056")
 
-                images, title, desc, photoId= flickr.get_photo_metadata(url="https://www.flickr.com/gp/923440134@N06/0930a6")
+                images, title, desc, photoId= flickr.get_photo_metadata(
+                    url="https://www.flickr.com/gp/923440134@N06/0930a6")
 
-                images, title, desc, photoId = flickr.get_photo_metadata(url="http://flic.kr/p/NpdUV5")
+                images, title, desc, photoId = flickr.get_photo_metadata(
+                    url="http://flic.kr/p/NpdUV5")
 
-                images, title, desc, photoId = flickr.get_photo_metadata(url=30455210056)
+                images, title, desc, photoId = flickr.get_photo_metadata(
+                    url=30455210056)
 
         """
         self.log.info('starting the ``get_photo_metadata`` method')
-
-        if "oauth_token" not in self.settings["flickr"] or "oauth_token_secret" not in self.settings["flickr"]:
-            self.authenticate()
-            print "Now try again"
-
-        consumer_key = str(self.settings["flickr"]["consumer_key"])
-        consumer_secret = str(self.settings["flickr"]["consumer_secret"])
-        oauth_token = str(self.settings["flickr"]["oauth_token"])
-        oauth_token_secret = str(self.settings["flickr"]["oauth_token_secret"])
-
-        auth = OAuth1(consumer_key, consumer_secret,
-                      oauth_token, oauth_token_secret)
 
         photoid = None
         if "flic" not in url and "/" not in url:
@@ -252,7 +248,7 @@ class picaxe():
                     "format": "json",
                     "nojsoncallback": "1",
                 },
-                auth=auth,
+                auth=self.auth,
             )
         except requests.exceptions.RequestException:
             print('HTTP Request failed')
@@ -274,7 +270,7 @@ class picaxe():
                     "format": "json",
                     "nojsoncallback": "1",
                 },
-                auth=auth,
+                auth=self.auth,
             )
         except requests.exceptions.RequestException:
             print('HTTP Request failed')
@@ -290,12 +286,12 @@ class picaxe():
     def md(
             self,
             url,
-            width=1024):
-        """*generate a multimarkdown image link viewable anywhere (no sign-in needed for private photos*
+            width="original"):
+        """*generate a multimarkdown image link viewable anywhere (no sign-in needed for private photos)*
 
         **Key Arguments:**
             - ``url`` -- the share URL for the flickr image  (or just the unique photoid)
-            - ``width`` -- the pixel width of the fully resolved image. Default *1024*. [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
+            - ``width`` -- the pixel width of the fully resolved image. Default *original*. [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
 
         **Return:**
             - ``md`` -- the image reference link in multi-markdown syntax
@@ -304,7 +300,7 @@ class picaxe():
 
             To return the markdown markup for an image at a given Flickr share URL:
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 from picaxe import picaxe
                 Flickr = picaxe(
@@ -313,7 +309,7 @@ class picaxe():
                 )
                 mdLink = Flickr.md(
                     url="https://www.flickr.com/photos/92344916@N06/30455211086"
-                    width=1024 
+                    width=1024
                 )
         """
         self.log.info('starting the ``md_image`` method')
@@ -339,6 +335,148 @@ class picaxe():
 
         self.log.info('completed the ``md_image`` method')
         return md
+
+    def upload(
+            self,
+            imagePath,
+            title=False,
+            private=True,
+            tags=False,
+            description=False,
+            imageType="photo"):
+        """*upload*
+
+        **Key Arguments:**
+            - ``imagePath`` -- path to the image to upload
+            - ``title`` -- title of the image. Default **False** to just use filename
+            - ``private`` -- is photo private?, Default **True**
+            - ``tags`` -- a comma separated string. Default **False**
+            - ``description`` -- the description for the image/photo. Default **False**
+            - ``imageType`` -- image type. Default **photo** [photo|screengrab|image]
+
+        **Return:**
+            - None
+
+        **Usage:**
+            ..  todo::
+
+                - add usage info
+                - create a sublime snippet for usage
+                - update package tutorial if needed
+
+            .. code-block:: python
+
+                usage code
+
+        """
+        self.log.info('starting the ``upload`` method')
+
+        basename = os.path.basename(imagePath)
+        basename = os.path.splitext(basename)[0]
+
+        if title == False:
+            title = basename
+
+        if private == True:
+            is_public = 0
+        else:
+            is_public = 1
+
+        if imageType == "image":
+            content_type = 3
+        elif imageType == "screengrab":
+            content_type = 2
+        else:
+            content_type = 1
+
+        if tags is not False:
+            tags = tags.replace(",", " ").replace("  ", " ")
+        else:
+            tags = ""
+
+        if description == False:
+            description = ""
+
+        if title == False:
+            title = basename
+
+        files = {
+            'photo': (basename, open(imagePath))
+        }
+
+        params = {
+            "title": title,
+            "description": description,
+            "tags": tags,
+            "is_public": is_public,
+            "content_type": content_type
+        }
+
+        url = 'https://up.flickr.com/services/upload/'
+        raw = requests.Request('POST', url, data=params, auth=self.auth)
+        prepared = raw.prepare()
+        headers = {'Authorization': prepared.headers.get('Authorization')}
+
+        try:
+            response = requests.post(
+                url=url,
+                data=params,
+                headers=headers,
+                files=files
+            )
+        except requests.exceptions.RequestException:
+            print('HTTP Request failed')
+
+        self.log.info('completed the ``upload`` method')
+        return None
+
+    def list_album_titles(
+            self):
+        """*list all of the albums (photosets) in the Flickr account*
+
+        **Return:**
+            - ``albumList`` -- the list of album names
+
+        **Usage:**
+
+            .. code-block:: python 
+
+                from picaxe import picaxe
+                flickr = picaxe(
+                    log=log,
+                    settings=settings
+                )
+                albumList = flickr.list_album_titles()
+
+            and, if you print the list of albums:
+
+            .. code-block:: text
+
+                [u'Auto Upload', u'home movies', u'projects: thespacedoctor', u'notes: images and screengrabs']
+        """
+        self.log.info('starting the ``list_album_titles`` method')
+
+        albumList = []
+
+        try:
+            response = requests.get(
+                url="https://api.flickr.com/services/rest/",
+                params={
+                    "method": "flickr.photosets.getList",
+                    "format": "json",
+                    "nojsoncallback": "1",
+                },
+                auth=self.auth,
+            )
+        except requests.exceptions.RequestException:
+            print('HTTP Request failed')
+
+        albumList = []
+        albumList[:] = [i["title"]["_content"]
+                        for i in response.json()["photosets"]["photoset"]]
+
+        self.log.info('completed the ``list_album_titles`` method')
+        return albumList
 
     # use the tab-trigger below for new method
     # xt-class-method
