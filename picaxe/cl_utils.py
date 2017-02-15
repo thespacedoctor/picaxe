@@ -6,14 +6,19 @@ Documentation for picaxe can be found here: http://picaxe.readthedocs.org/en/sta
 Usage:
     picaxe init
     picaxe auth [-s <pathToSettingsFile>]
-    picaxe md <url> [<width>] [-s <pathToSettingsFile>]
+    picaxe md <urlOrPhotoid> [<width>] [-s <pathToSettingsFile>]
+    picaxe albums [-s <pathToSettingsFile>]
 
 Options:
     init                  setup the polygot settings file for the first time
     auth                  authenticate picaxe against your flickr account
     md                    generate the MD reference link for the image in the given flickr URL
-    <url>                 the flickr URL or photoid
-    <width>               pixel width resolution of the linked image. Default *1024*. options = [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
+    albums                list all the albums in the flickr account
+
+    <pathToSettingsFile>  path to the picaxe settings file
+    <urlOrPhotoid>        the flickr URL or photoid
+    <width>               pixel width resolution of the linked image. Default *original*. [75|100|150|240|320|500|640|800|1024|1600|2048]
+    
     -h, --help            show this help message
     -v, --version         show version
     -s, --settings        the settings file
@@ -92,13 +97,23 @@ def main(arguments=None):
             settings=settings
         )
         if not width:
-            width = 1024
+            width = "original"
         mdLink = Flickr.md(
-            url=url,
+            url=urlOrPhotoid,
             # [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
             width=width
         )
         print mdLink
+
+    if albums:
+        from picaxe import picaxe
+        flickr = picaxe(
+            log=log,
+            settings=settings
+        )
+        albumList = flickr.list_album_titles()
+        for a in albumList:
+            print a
 
     # CALL FUNCTIONS/OBJECTS
 

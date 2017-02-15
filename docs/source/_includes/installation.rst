@@ -1,7 +1,7 @@
 Installation
 ============
 
-The easiest way to install picaxe us to use ``pip``:
+The easiest way to install picaxe is to use ``pip``:
 
 .. code:: bash
 
