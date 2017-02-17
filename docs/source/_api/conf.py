@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # picaxe documentation build configuration file, created by
-# sphinx-quickstart on Wed Feb 15 13:39:37 2017.
+# sphinx-quickstart on Fri Feb 17 12:49:39 2017.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
