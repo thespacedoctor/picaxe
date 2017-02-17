@@ -343,7 +343,9 @@ class picaxe():
             private=True,
             tags=False,
             description=False,
-            imageType="photo"):
+            imageType="photo",
+            album=False,
+            openInBrowser=False):
         """*upload*
 
         **Key Arguments:**
@@ -353,20 +355,36 @@ class picaxe():
             - ``tags`` -- a comma separated string. Default **False**
             - ``description`` -- the description for the image/photo. Default **False**
             - ``imageType`` -- image type. Default **photo** [photo|screengrab|image]
+            - ``album`` -- add the photo to a specific album/photoset. If the album does not exist it will be created for you. Default *False*.
+            - ``openInBrowser`` -- view the photo in flickr webapp once uploaded *Default: False*
 
         **Return:**
-            - None
+            - ``photoid`` -- the unique flickr-assigned ID of the uploaded image
 
         **Usage:**
-            ..  todo::
 
-                - add usage info
-                - create a sublime snippet for usage
-                - update package tutorial if needed
+            To upload an image to flickr from your local file-system, use the following:
 
             .. code-block:: python
 
-                usage code
+                from picaxe import picaxe
+                flickr = picaxe(
+                    log=log,
+                    settings=settings
+                )
+                photoid = flickr.upload(
+                    imagePath="/path/to/image.png",
+                    title="my lovely image",
+                    private=False,
+                    tags="lovely, icon",
+                    description="this is a test image",
+                    imageType="image",
+                    album="my icons",
+                    openInBrowser=True
+                )
+                print photoid
+
+            This will upload an image to the "my icons" album (creating the album if it doens't exist yet) and open the image in the flickr web-app whenever upload is complete. Note title, description, tags and album are optional.
 
         """
         self.log.info('starting the ``upload`` method')
@@ -374,7 +392,7 @@ class picaxe():
         basename = os.path.basename(imagePath)
         basename = os.path.splitext(basename)[0]
 
-        if title == False:
+        if title == False or title == None:
             title = basename
 
         if private == True:
@@ -389,16 +407,13 @@ class picaxe():
         else:
             content_type = 1
 
-        if tags is not False:
+        if tags is not False and tags != None:
             tags = tags.replace(",", " ").replace("  ", " ")
         else:
             tags = ""
 
-        if description == False:
+        if description == False or description == None:
             description = ""
-
-        if title == False:
-            title = basename
 
         files = {
             'photo': (basename, open(imagePath))
@@ -409,7 +424,8 @@ class picaxe():
             "description": description,
             "tags": tags,
             "is_public": is_public,
-            "content_type": content_type
+            "content_type": content_type,
+            "format": "json"
         }
 
         url = 'https://up.flickr.com/services/upload/'
@@ -427,8 +443,26 @@ class picaxe():
         except requests.exceptions.RequestException:
             print('HTTP Request failed')
 
+        matchObject = re.search(
+            r"<photoid>(\d*)</photoid>", response.content, re.S)
+        photoid = matchObject.group(1)
+
+        photoURL = "https://www.flickr.com/photos/" + \
+            self.settings["flickr"]["user_nsid"] + "/" + photoid
+
+        if album:
+            self._add_photo_to_album(
+                photoId=photoid,
+                album=album
+            )
+
+        if openInBrowser:
+            ## open in webbrowser
+            import webbrowser
+            webbrowser.open_new_tab(photoURL)
+
         self.log.info('completed the ``upload`` method')
-        return None
+        return photoid
 
     def list_album_titles(
             self):
@@ -477,6 +511,87 @@ class picaxe():
 
         self.log.info('completed the ``list_album_titles`` method')
         return albumList
+
+    # use the tab-trigger below for new method
+    def _add_photo_to_album(
+            self,
+            photoId,
+            album):
+        """*add a photo with the given photo ID to a named album*
+
+        **Key Arguments:**
+            - ``photoId`` -- the ID of the photo to add to the album
+            - ``album`` -- the name of the album to add the photo to
+
+        **Return:**
+            - None
+
+        **Usage:**
+            ..  todo::
+
+                - add usage info
+                - create a sublime snippet for usage
+                - update package tutorial if needed
+
+            .. code-block:: python 
+
+                usage code 
+
+        """
+        self.log.info('starting the ``_add_photo_to_album`` method')
+
+        try:
+            response = requests.get(
+                url="https://api.flickr.com/services/rest/",
+                params={
+                    "method": "flickr.photosets.getList",
+                    "format": "json",
+                    "nojsoncallback": "1",
+                },
+                auth=self.auth,
+            )
+        except requests.exceptions.RequestException:
+            print('HTTP Request failed')
+
+        albumId = False
+        for s in response.json()["photosets"]["photoset"]:
+            if s["title"]["_content"].lower().strip() == album.strip():
+                albumId = s["id"]
+
+        if albumId:
+            try:
+                response = requests.post(
+                    url="https://api.flickr.com/services/rest/",
+                    params={
+                        "method": "flickr.photosets.addPhoto",
+                        "photoset_id": albumId,
+                        "photo_id": photoId,
+                        "format": "json",
+                        "nojsoncallback": "1",
+                    },
+                    auth=self.auth,
+                )
+            except requests.exceptions.RequestException:
+                print('HTTP Request failed')
+
+        else:
+            try:
+                response = requests.post(
+                    url="https://api.flickr.com/services/rest/",
+                    params={
+                        "method": "flickr.photosets.create",
+                        "title": album,
+                        "primary_photo_id": photoId,
+                        "format": "json",
+                        "nojsoncallback": "1",
+                    },
+                    auth=self.auth,
+                )
+            except requests.exceptions.RequestException:
+                print('HTTP Request failed')
+
+        self.log.info('completed the ``_add_photo_to_album`` method')
+        return None
 
     # use the tab-trigger below for new method
     # xt-class-method

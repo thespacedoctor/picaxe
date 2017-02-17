@@ -97,6 +97,24 @@ Here's the MMD link dumped to stdout:
 
 Note the image reference is generated from the image title (if there is one) and photo-id so should always be unique (i.e. no reference name clashes in your MMD documents).
 
+Uploading Local Images to Flickr
+--------------------------------
+
+It's possible to upload images to Flickr via the command-line with options to set tags, album, titles, descriptions and privacy levels with picaxe. To do so use the command:
+
+```bash
+picaxe [-giop] upload <imagePath> [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
+```
+
+So in its simplest form you could upload an image with picaxe like:
+
+```bash
+picaxe upload "/path/to/image.png"
+```
+
+as *title*, *description*, *album* and *tags* are optional arguments. The `-g` flag indicates that the uploaded image is a screengrab, `-i` that it is an image (as opposed to a photo), `-p` requests that the image be made public and `-o` that the image be opened in the Flickr web-app in your default browser once upload has completed.
+
+
     
 
 

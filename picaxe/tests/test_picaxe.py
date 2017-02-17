@@ -105,19 +105,41 @@ class test_picaxe(unittest.TestCase):
             log=log,
             settings=settings
         )
-        photo.upload(
+        photoid = photo.upload(
             imagePath=testImage,
             private=True,
             title="delete me",
             tags="nice, photo",
             description="this is thespacedoctor icon"
         )
-        photo.upload(
+        print photoid
+        photoid = photo.upload(
             imagePath=testImage,
             private=False,
             title="delete me again",
             tags="crap, photo",
-            description="this is thespacedoctor icon again"
+            description="this is thespacedoctor icon again",
+            album="trash"
+        )
+        print photoid
+
+    def test_add_image_to_album(self):
+
+        from picaxe import picaxe
+        flickr = picaxe(
+            log=log,
+            settings=settings
+        )
+        photoid = flickr.upload(
+            imagePath=testImage,
+            private=True,
+            title="delete me",
+            tags="nice, photo",
+            description="this is thespacedoctor icon"
+        )
+        flickr._add_photo_to_album(
+            photoId=photoid,
+            album="trash"
         )
 
     def test_list_album_titles(self):
