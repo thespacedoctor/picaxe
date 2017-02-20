@@ -9,6 +9,7 @@ Usage:
     picaxe md <urlOrPhotoid> [<width>] [-s <pathToSettingsFile>]
     picaxe albums [-s <pathToSettingsFile>]
     picaxe [-giop] upload <imagePath> [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
+    picaxe [-op] grab [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
 
 Options:
     init                  setup the polygot settings file for the first time
@@ -146,14 +147,54 @@ def main(arguments=None):
         photoid = flickr.upload(
             imagePath=imagePath,
             title=titleFlag,
-            private=pFlag,
+            private=publicFlag,
             tags=tagsFlag,
             description=descFlag,
             imageType=imageType,  # image|screengrab|photo
-            album=album,
+            album=albumFlag,
             openInBrowser=openFlag
         )
         print photoid
+
+    if grab:
+
+        # for k, v in locals().iteritems():
+        #     print k, v
+        # return
+        try:
+            os.remove("/tmp/screengrab.png")
+        except:
+            pass
+
+        from subprocess import Popen, PIPE, STDOUT
+        cmd = """screencapture -i /tmp/screengrab.png""" % locals()
+        p = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+        stdout, stderr = p.communicate()
+        log.debug('output: %(stdout)s' % locals())
+
+        exists = os.path.exists("/tmp/screengrab.png")
+        if exists:
+            from picaxe import picaxe
+            flickr = picaxe(
+                log=log,
+                settings=settings
+            )
+            photoid = flickr.upload(
+                imagePath="/tmp/screengrab.png",
+                title=titleFlag,
+                private=publicFlag,
+                tags=tagsFlag,
+                description=descFlag,
+                imageType="screengrab",  # image|screengrab|photo
+                album=albumFlag,
+                openInBrowser=openFlag
+            )
+            mdLink = flickr.md(
+                url=photoid,
+                # [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
+                width="original"
+            )
+            print mdLink
 
     # CALL FUNCTIONS/OBJECTS
 
