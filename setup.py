@@ -15,8 +15,6 @@ install_requires = [
     'fundamentals',
     'requests',
     'requests_oauthlib',
-    'pyopenssl',
-    'ndg-httpsclient',
     'pyasn1'
 ]
 
