@@ -21,6 +21,7 @@ Command-Line Usage
         picaxe md <urlOrPhotoid> [<width>] [-s <pathToSettingsFile>]
         picaxe albums [-s <pathToSettingsFile>]
         picaxe [-giop] upload <imagePath> [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
+        picaxe [-op] grab [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
 
     Options:
         init                  setup the polygot settings file for the first time
