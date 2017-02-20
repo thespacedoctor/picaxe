@@ -12,6 +12,7 @@ Command-Line Usage
         picaxe md <urlOrPhotoid> [<width>] [-s <pathToSettingsFile>]
         picaxe albums [-s <pathToSettingsFile>]
         picaxe [-giop] upload <imagePath> [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
+        picaxe [-op] grab [--title=<title> --tags=<tags> --desc=<desc> --album=<album> --delay=<sec>]
     
     Options:
         init                  setup the polygot settings file for the first time
@@ -28,6 +29,7 @@ Command-Line Usage
         --title=<title>       the image title
         --tags=<tags>         quoted, comma-sepatated tags
         --desc=<desc>         image description
+        --delay=<sec>         the delay time before screen-grab selection tool appears
         
         -p, --public          make the image public (private by default)
         -o, --open            open the image in the flickr web-app once uploaded

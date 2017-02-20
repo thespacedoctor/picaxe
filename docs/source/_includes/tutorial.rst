@@ -102,17 +102,42 @@ Uploading Local Images to Flickr
 
 It's possible to upload images to Flickr via the command-line with options to set tags, album, titles, descriptions and privacy levels with picaxe. To do so use the command:
 
-```bash
-picaxe [-giop] upload <imagePath> [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
-```
+.. code-block:: bash 
+    
+    picaxe [-giop] upload <imagePath> [--title=<title> --tags=<tags> --desc=<desc> --album=<album>]
 
 So in its simplest form you could upload an image with picaxe like:
 
-```bash
-picaxe upload "/path/to/image.png"
-```
+.. code-block:: bash 
+
+    picaxe upload "/path/to/image.png"
 
 as *title*, *description*, *album* and *tags* are optional arguments. The `-g` flag indicates that the uploaded image is a screengrab, `-i` that it is an image (as opposed to a photo), `-p` requests that the image be made public and `-o` that the image be opened in the Flickr web-app in your default browser once upload has completed.
+
+Taking Screenshots with picaxe
+------------------------------
+
+The command for taking a screenshot with picaxe is similar to the command for uploading local images:
+
+.. code-block:: bash 
+    
+    picaxe [-op] grab [--title=<title> --tags=<tags> --desc=<desc> --album=<album> --delay=<sec>]
+
+By default picaxe will upload screenshots to a 'screengrabs' album unless a specific album is specified. All I need to do to trigger a screenshot selection cursor is run the following:
+
+.. code-block:: bash 
+    
+    picaxe grab
+
+I can now select the section of the screen I want to clip, or press space-bar to change to a window-selection cursor, and picaxe will upload the resulting image to flickr and dump the multi-markdown image link to stdout.
+
+As this command is run from the terminal you will probably want a little time to navigate to the correct desktop/application you wish to take a screenshot of before the screen-capture cursor is activated. To do this pass in a delay in seconds via the `--delay` flag; so for a 3 sec delay run:
+
+.. code-block:: bash 
+    
+    picaxe grab --delay=3
+
+
 
 
     
