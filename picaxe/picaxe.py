@@ -328,7 +328,7 @@ class picaxe():
         else:
             pxWidth = width
 
-        md = """![][%(tag)s]
+        md = """![%(title)s][%(tag)s]
 
 [%(tag)s]: %(image)s title="%(title)s" width=600px
 """ % locals()
