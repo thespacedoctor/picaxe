@@ -1,6 +1,11 @@
 picaxe
 ======
 
+
+[![](https://zenodo.org/badge/71790281.svg)](https://zenodo.org/badge/latestdoi/71790281) 
+
+
+
 [![Documentation Status](https://readthedocs.org/projects/picaxe/badge/)](http://picaxe.readthedocs.io/en/latest/?badge)
 
 [![Coverage Status](https://cdn.jsdelivr.net/gh/thespacedoctor/picaxe@master/coverage.svg)](https://cdn.jsdelivr.net/gh/thespacedoctor/picaxe@master/htmlcov/index.html)
@@ -124,3 +129,19 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+## How to cite picaxe
+
+If you use `picaxe` in your work, please cite using the following BibTeX entry: 
+
+```bibtex
+@software{Young_picaxe,
+    author = {Young, David R.},
+    doi = {10.5281/zenodo.8037712},
+    license = {GPL-3.0-only},
+    title = {{picaxe}},
+    url = {https://github.com/thespacedoctor/picaxe}
+}
+```
+ 
