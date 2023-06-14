@@ -5,8 +5,8 @@ picaxe
     :target: http://picaxe.readthedocs.io/en/latest/?badge
     :alt: Documentation Status
 
-.. image:: https://cdn.rawgit.com/thespacedoctor/picaxe/master/coverage.svg
-    :target: https://cdn.rawgit.com/thespacedoctor/picaxe/master/htmlcov/index.html
+.. image:: https://cdn.jsdelivr.net/gh/thespacedoctor/picaxe@master/coverage.svg
+    :target: https://cdn.jsdelivr.net/gh/thespacedoctor/picaxe@master/htmlcov/index.html
     :alt: Coverage Status
 
 *A python package and command-line tools for work with the Flickr API to upload images, sort images, generate MD image reference links etc*.
@@ -114,7 +114,7 @@ Please report any issues
 License
 =======
 
-Copyright (c) 2016 David Young
+Copyright (c) 2018 David Young
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the

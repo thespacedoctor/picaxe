@@ -75,7 +75,7 @@ class picaxe():
                 )
                 flickrClient.authenticate()
         """
-        self.log.info('starting the ``authenticate`` method')
+        self.log.debug('starting the ``authenticate`` method')
 
         if not self.settings["flickr"] or "consumer_key" not in self.settings["flickr"] or "consumer_secret" not in self.settings["flickr"]:
             print "Navigate here <https://www.flickr.com/services/apps/create/apply/> and request a 'non-commerial key'"
@@ -160,7 +160,7 @@ class picaxe():
         yaml.dump(yamlContent, stream, default_flow_style=False)
         stream.close()
 
-        self.log.info('completed the ``authenticate`` method')
+        self.log.debug('completed the ``authenticate`` method')
         return None
 
     def get_photo_metadata(
@@ -201,7 +201,7 @@ class picaxe():
                     url=30455210056)
 
         """
-        self.log.info('starting the ``get_photo_metadata`` method')
+        self.log.debug('starting the ``get_photo_metadata`` method')
 
         photoid = None
         if "flic" not in url and "/" not in url:
@@ -280,18 +280,20 @@ class picaxe():
         desc = data["photo"]["description"]["_content"]
         photoId = data["photo"]["id"]
 
-        self.log.info('completed the ``get_photo_metadata`` method')
+        self.log.debug('completed the ``get_photo_metadata`` method')
         return images, title, desc, photoId
 
     def md(
             self,
             url,
-            width="original"):
+            width="original",
+            inline=False):
         """*generate a multimarkdown image link viewable anywhere (no sign-in needed for private photos)*
 
         **Key Arguments:**
             - ``url`` -- the share URL for the flickr image  (or just the unique photoid)
             - ``width`` -- the pixel width of the fully resolved image. Default *original*. [75, 100, 150, 240, 320, 500, 640, 800, 1024, 1600, 2048]
+            - ``inline`` -- print an inline image link. Width ignored. Default *False*
 
         **Return:**
             - ``md`` -- the image reference link in multi-markdown syntax
@@ -312,7 +314,7 @@ class picaxe():
                     width=1024
                 )
         """
-        self.log.info('starting the ``md_image`` method')
+        self.log.debug('starting the ``md_image`` method')
 
         images, title, desc, photoId = self.get_photo_metadata(url)
 
@@ -321,19 +323,28 @@ class picaxe():
         else:
             tag = "%(title)s %(photoId)s" % locals()
 
-        image = images[str(width)]
+        try:
+            width = int(width)
+        except:
+            pass
+        image = images[width]
 
         if width == "original":
             pxWidth = 1024
         else:
             pxWidth = width
 
-        md = """![%(title)s][%(tag)s]
+        if inline:
+            md = """![%(title)s](%(image)s)""" % locals()
 
-[%(tag)s]: %(image)s title="%(title)s" width=600px
-""" % locals()
+        else:
 
-        self.log.info('completed the ``md_image`` method')
+            md = """![%(title)s][%(tag)s]
+
+    [%(tag)s]: %(image)s title="%(title)s" width=600px
+    """ % locals()
+
+        self.log.debug('completed the ``md_image`` method')
         return md
 
     def upload(
@@ -387,7 +398,7 @@ class picaxe():
             This will upload an image to the "my icons" album (creating the album if it doens't exist yet) and open the image in the flickr web-app whenever upload is complete. Note title, description, tags and album are optional.
 
         """
-        self.log.info('starting the ``upload`` method')
+        self.log.debug('starting the ``upload`` method')
 
         basename = os.path.basename(imagePath)
         basename = os.path.splitext(basename)[0]
@@ -461,7 +472,7 @@ class picaxe():
             import webbrowser
             webbrowser.open_new_tab(photoURL)
 
-        self.log.info('completed the ``upload`` method')
+        self.log.debug('completed the ``upload`` method')
         return photoid
 
     def list_album_titles(
@@ -488,7 +499,7 @@ class picaxe():
 
                 [u'Auto Upload', u'home movies', u'projects: thespacedoctor', u'notes: images and screengrabs']
         """
-        self.log.info('starting the ``list_album_titles`` method')
+        self.log.debug('starting the ``list_album_titles`` method')
 
         albumList = []
 
@@ -509,7 +520,7 @@ class picaxe():
         albumList[:] = [i["title"]["_content"]
                         for i in response.json()["photosets"]["photoset"]]
 
-        self.log.info('completed the ``list_album_titles`` method')
+        self.log.debug('completed the ``list_album_titles`` method')
         return albumList
 
     # use the tab-trigger below for new method
@@ -538,7 +549,7 @@ class picaxe():
                 usage code 
 
         """
-        self.log.info('starting the ``_add_photo_to_album`` method')
+        self.log.debug('starting the ``_add_photo_to_album`` method')
 
         try:
             response = requests.get(
@@ -590,7 +601,7 @@ class picaxe():
             except requests.exceptions.RequestException:
                 print('HTTP Request failed')
 
-        self.log.info('completed the ``_add_photo_to_album`` method')
+        self.log.debug('completed the ``_add_photo_to_album`` method')
         return None
 
     # use the tab-trigger below for new method
